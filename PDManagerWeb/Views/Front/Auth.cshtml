@@ -1,0 +1,80 @@
+﻿
+@{
+    ViewData["Title"] = "Вход в систему";
+}
+<div class="text-center">
+    <h1 class="display-4">Вход в систему</h1>
+    <p>
+        <label>Логин:</label><br />
+        <input id="login" type="text" autocomplete="off" size="20" maxlength="20" />
+    </p>
+    <p>
+        <label>Пароль:</label><br />
+        <input id="password" type="password" size="20" />
+    </p>
+    <p>
+        <input type="button" id="regBut" value="Регистрация" />
+        <input type="button" id="authBut" value="Вход" />
+    </p>
+    <label id="errMsg" style="color:red"></label>
+</div>
+@section scripts
+{
+    <script>
+        var login = document.getElementById("login"),
+            password = document.getElementById("password"),
+            errMsg = document.getElementById("errMsg");
+        document.getElementById("regBut").addEventListener('click', async function () {
+            if (login.value === "" || password.value === "") {
+                errMsg.innerText = "Логин и пароль не могут быть пустыми!";
+                return;
+            }
+            const request = new Request('/api/Accounts');
+            var data = new FormData();
+            data.append('login', login.value);
+            data.append('password', password.value);
+            const options = {
+                method: "POST",
+                body: data
+            };
+            const response = await fetch(request, options);
+            if (!response.ok) {
+                errMsg.innerText = "Ошибка связи с сервером!";
+                return;
+            }
+            const json = await response.json();
+            if (json.result === 0) {
+                errMsg.innerText = json.message;
+            }
+            else {
+                location.reload();
+            }
+        });
+        document.getElementById("authBut").addEventListener('click', async function () {
+            if (login.value === "" || password.value === "") {
+                errMsg.innerText = "Логин и пароль не могут быть пустыми!";
+                return;
+            }
+            const request = new Request('/api/Accounts/Auth');
+            var data = new FormData();
+            data.append('login', login.value);
+            data.append('password', password.value);
+            const options = {
+                method: "POST",
+                body: data
+            };
+            const response = await fetch(request, options);
+            if (!response.ok) {
+                errMsg.innerText = "Ошибка связи с сервером!";
+                return;
+            }
+            const json = await response.json();
+            if (json.result === 0) {
+                errMsg.innerText = json.message;
+            }
+            else {
+                location.reload();
+            }
+        });
+    </script>
+}
