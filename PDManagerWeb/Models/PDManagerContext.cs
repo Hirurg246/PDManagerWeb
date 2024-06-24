@@ -51,7 +51,7 @@ public partial class PDManagerContext : DbContext
                 .IsUnique()
                 .HasFilter("([isDeleted]=(0))");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).UseIdentityColumn();
             entity.Property(e => e.PasswordHash).IsFixedLength();
         });
 
@@ -59,9 +59,9 @@ public partial class PDManagerContext : DbContext
         {
             entity.ToTable(tb => tb.HasTrigger("Trigger_AllowedFormat_Delete"));
 
-            entity.HasOne(d => d.DocumentFormat).WithMany(p => p.AllowedFormats).HasConstraintName("FK_AllowedFormat_DocumentFormat");
+            //entity.HasOne(d => d.DocumentFormat).WithMany(p => p.AllowedFormats).HasConstraintName("FK_AllowedFormat_DocumentFormat");
 
-            entity.HasOne(d => d.DocumentType).WithMany(p => p.AllowedFormats).HasConstraintName("FK_AllowedFormat_DocumentType");
+            //entity.HasOne(d => d.DocumentType).WithMany(p => p.AllowedFormats).HasConstraintName("FK_AllowedFormat_DocumentType");
         });
 
         modelBuilder.Entity<Product>(entity =>
@@ -85,9 +85,9 @@ public partial class PDManagerContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProductAccesse_AccessLevel");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.ProductAccesses).HasConstraintName("FK_ProductAccess_Account");
+            //entity.HasOne(d => d.Account).WithMany(p => p.ProductAccesses).HasConstraintName("FK_ProductAccess_Account");
 
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductAccesses).HasConstraintName("FK_ProductAccess_Product");
+            //entity.HasOne(d => d.Product).WithMany(p => p.ProductAccesses).HasConstraintName("FK_ProductAccess_Product");
         });
 
         modelBuilder.Entity<ProgramDocument>(entity =>
@@ -98,9 +98,9 @@ public partial class PDManagerContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProgramDocument_TypeFormat");
 
-            entity.HasOne(d => d.LastChangeUser).WithMany(p => p.ProgramDocuments).HasConstraintName("FK_ProgramDocument_ChangeUser");
+            //entity.HasOne(d => d.LastChangeUser).WithMany(p => p.ProgramDocuments).HasConstraintName("FK_ProgramDocument_ChangeUser");
 
-            entity.HasOne(d => d.Product).WithMany(p => p.ProgramDocuments).HasConstraintName("FK_ProgramDocument_Product");
+            //entity.HasOne(d => d.Product).WithMany(p => p.ProgramDocuments).HasConstraintName("FK_ProgramDocument_Product");
         });
 
         modelBuilder.Entity<SysAdmin>(entity =>

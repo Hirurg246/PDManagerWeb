@@ -26,7 +26,7 @@ namespace PDManagerWeb.Controllers
             authDTO.Login = authDTO.Login.Trim();
             byte[] hPass = SHA256.HashData(Encoding.UTF8.GetBytes(authDTO.Password));
             Account user = new Account() { Login = authDTO.Login, PasswordHash = hPass };
-            _context.Accounts.Add(user);
+            await _context.Accounts.AddAsync(user);
             try
             {
                 await _context.SaveChangesAsync();
