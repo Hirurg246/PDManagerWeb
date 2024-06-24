@@ -15,14 +15,14 @@ namespace PDManagerWeb.Controllers
         {
             if (HttpContext.Session.GetInt32("id") == null)
                 return View();
-            return View("Documents");
+            return Redirect("/Documents");
         }
 
         [HttpGet("Documents")]
         public IActionResult Documents()
         {
             if (HttpContext.Session.GetInt32("id") == null)
-                return View("Auth");
+                return Redirect("/");
             return View();
         }
 
@@ -30,7 +30,7 @@ namespace PDManagerWeb.Controllers
         public IActionResult Admin()
         {
             if (HttpContext.Session.GetInt32("id") == null)
-                return View("Auth");
+                return Redirect("/");
             return View();
         }
 
@@ -38,7 +38,7 @@ namespace PDManagerWeb.Controllers
         public IActionResult DeAuth()
         {
             HttpContext.Session.Remove("id");
-            return View("Auth");
+            return Redirect("/");
         }
     }
 }

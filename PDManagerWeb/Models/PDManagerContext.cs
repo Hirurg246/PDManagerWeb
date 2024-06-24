@@ -34,8 +34,7 @@ public partial class PDManagerContext : DbContext
     public virtual DbSet<SysAdmin> SysAdmins { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseLazyLoadingProxies().
-        UseSqlServer("Name=ConnectionStrings:DBHSE_PDManager");
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DBHSE_PDManager");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

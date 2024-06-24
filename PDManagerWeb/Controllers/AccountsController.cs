@@ -19,7 +19,7 @@ namespace PDManagerWeb.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> Create([FromForm] AccountDTO authDTO)
+        public async Task<IActionResult> CreateAsync([FromForm] AccountDTO authDTO)
         {
             if (string.IsNullOrWhiteSpace(authDTO.Login) || string.IsNullOrWhiteSpace(authDTO.Password))
                 return new JsonResult(new { result = 0, message = "Логин и пароль не могут быть пустыми!" });
@@ -40,7 +40,7 @@ namespace PDManagerWeb.Controllers
         }
 
         [HttpPost("Auth")]
-        public async Task<IActionResult> AuthUser([FromForm] AccountDTO authDTO)
+        public async Task<IActionResult> AuthUserAsync([FromForm] AccountDTO authDTO)
         {
             if (string.IsNullOrWhiteSpace(authDTO.Login) || string.IsNullOrWhiteSpace(authDTO.Password))
                 return new JsonResult(new { result = 0, message = "Логин и пароль не могут быть пустыми!" });

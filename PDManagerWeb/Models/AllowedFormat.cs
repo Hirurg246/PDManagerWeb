@@ -29,4 +29,6 @@ public partial class AllowedFormat
 
     [InverseProperty("DocumentTypeFormat")]
     public virtual ICollection<ProgramDocument> ProgramDocuments { get; set; } = new List<ProgramDocument>();
+
+    public string FullName => DocumentType.Name + '.' + DocumentFormat.Extension;
 }
