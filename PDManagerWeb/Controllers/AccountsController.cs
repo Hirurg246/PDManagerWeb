@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PDManagerWeb.DTOs;
 using PDManagerWeb.Models;
+using PDManagerWeb.Models.DTOs;
+using PDManagerWeb.Repositories.Interfaces;
+using PDManagerWeb.Services.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -10,47 +12,25 @@ namespace PDManagerWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountsController : ControllerBase
+    public class AccountsController(IAccountsQueryService accountsQueryService, IAccountsCommandService accountsCommandService) : ControllerBase
     {
-        private readonly PDManagerContext _context;
-        public AccountsController(PDManagerContext context)
-        {
-            _context = context;
-        }
+        private readonly IAccountsQueryService _accountsQueryService = accountsQueryService;
+        private readonly IAccountsCommandService _accountsCommandService = accountsCommandService;
 
         [HttpPost("")]
-        public async Task<IActionResult> CreateAsync([FromForm] AccountDTO authDTO)
+        public async Task<IActionResult> CreateAsync([FromForm] AccountAuthDTO authDTO)
         {
-            if (string.IsNullOrWhiteSpace(authDTO.Login) || string.IsNullOrWhiteSpace(authDTO.Password))
-                return new JsonResult(new { result = 0, message = "Логин и пароль не могут быть пустыми!" });
-            authDTO.Login = authDTO.Login.Trim();
-            byte[] hPass = SHA256.HashData(Encoding.UTF8.GetBytes(authDTO.Password));
-            Account user1 = new Account() { Login = authDTO.Login, PasswordHash = hPass };
-            await _context.Accounts.AddAsync(user1);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return new JsonResult(new { result = 0, message = "Некорректные логин или пароль, проверьте ввод!" });
-            }
-            HttpContext.Session.SetInt32("id", user1.Id);
-            return new JsonResult(new { result = 1 });
+            (IActionResult actionResult, int id) = await _accountsCommandService.CreateUserAsync(authDTO);
+            if (id > 0) HttpContext.Session.SetInt32("id", id);
+            return actionResult;
         }
 
         [HttpPost("Auth")]
-        public async Task<IActionResult> AuthUserAsync([FromForm] AccountDTO authDTO)
+        public async Task<IActionResult> AuthUserAsync([FromForm] AccountAuthDTO authDTO)
         {
-            if (string.IsNullOrWhiteSpace(authDTO.Login) || string.IsNullOrWhiteSpace(authDTO.Password))
-                return new JsonResult(new { result = 0, message = "Логин и пароль не могут быть пустыми!" });
-            authDTO.Login = authDTO.Login.Trim();
-            byte[] hPass = SHA256.HashData(Encoding.UTF8.GetBytes(authDTO.Password));
-            Account? user = await _context.Accounts.Where(a => a.Login == authDTO.Login && !a.IsDeleted && a.PasswordHash == hPass).FirstOrDefaultAsync();
-            if (user is null)
-                return new JsonResult(new { result = 0, message = "Неверные логин или пароль, проверьте ввод!" });
-            HttpContext.Session.SetInt32("id", user.Id);
-            return new JsonResult(new { result = 1 });
+            (IActionResult actionResult, int id) = await _accountsQueryService.CheckUserAsync(authDTO);
+            if (id > 0) HttpContext.Session.SetInt32("id", id);
+            return actionResult;
         }
     }
 }

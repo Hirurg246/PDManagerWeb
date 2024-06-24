@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SqlServer.Server;
-using PDManagerWeb.DTOs;
 using PDManagerWeb.Models;
 using System.Drawing;
 
