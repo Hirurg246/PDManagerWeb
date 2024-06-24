@@ -1,10 +1,13 @@
 using PDManagerWeb.Models;
 using PDManagerWeb.Controllers;
 using PDManagerWeb.Middleware;
+using PDManagerWeb.Models.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<PDManagerContext>();
+
+builder.Services.AddAutoMapper(typeof(AccountMappingProfile));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();

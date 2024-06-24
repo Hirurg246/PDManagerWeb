@@ -1,6 +1,6 @@
-﻿namespace PDManagerWeb.DTOs
+﻿namespace PDManagerWeb.Models.DTOs
 {
-    public record AccountDTO
+    public record AccountAuthDTO
     {
         public string Login { get; set; }
 
