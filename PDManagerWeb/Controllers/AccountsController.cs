@@ -25,8 +25,8 @@ namespace PDManagerWeb.Controllers
                 return new JsonResult(new { result = 0, message = "Логин и пароль не могут быть пустыми!" });
             authDTO.Login = authDTO.Login.Trim();
             byte[] hPass = SHA256.HashData(Encoding.UTF8.GetBytes(authDTO.Password));
-            Account user = new Account() { Login = authDTO.Login, PasswordHash = hPass };
-            await _context.Accounts.AddAsync(user);
+            Account user1 = new Account() { Login = authDTO.Login, PasswordHash = hPass };
+            await _context.Accounts.AddAsync(user1);
             try
             {
                 await _context.SaveChangesAsync();
@@ -35,7 +35,7 @@ namespace PDManagerWeb.Controllers
             {
                 return new JsonResult(new { result = 0, message = "Некорректные логин или пароль, проверьте ввод!" });
             }
-            HttpContext.Session.SetInt32("id", user.Id);
+            HttpContext.Session.SetInt32("id", user1.Id);
             return new JsonResult(new { result = 1 });
         }
 
