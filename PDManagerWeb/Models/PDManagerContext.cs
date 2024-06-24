@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 namespace PDManagerWeb.Models;
@@ -50,6 +52,9 @@ public partial class PDManagerContext : DbContext
             entity.HasIndex(e => e.Login, "UK_Account_Login")
                 .IsUnique()
                 .HasFilter("([isDeleted]=(0))");
+
+            entity.HasData(new Account { Id = 1, Login = "main_admin",
+                PasswordHash = SHA256.HashData(Encoding.UTF8.GetBytes("main_password")) });
         });
 
         modelBuilder.Entity<AllowedFormat>(entity =>
@@ -76,6 +81,8 @@ public partial class PDManagerContext : DbContext
         modelBuilder.Entity<SysAdmin>(entity =>
         {
             entity.Property(e => e.Id).ValueGeneratedNever();
+
+            entity.HasData(new SysAdmin { Id = 1, IsMain = true });
         });
 
         OnModelCreatingPartial(modelBuilder);

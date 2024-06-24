@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PDManagerWeb.Models;
 using PDManagerWeb.Models.DTOs;
 using PDManagerWeb.Repositories.Interfaces;
+using PDManagerWeb.Services.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -11,34 +12,25 @@ namespace PDManagerWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountsController : ControllerBase
+    public class AccountsController(IAccountsQueryService accountsQueryService, IAccountsCommandService accountsCommandService) : ControllerBase
     {
-        private readonly IAccountRepository _accountRepository;
-        public AccountsController(IAccountRepository accountRepository)
-        {
-            _accountRepository = accountRepository;
-        }
+        private readonly IAccountsQueryService _accountsQueryService = accountsQueryService;
+        private readonly IAccountsCommandService _accountsCommandService = accountsCommandService;
 
         [HttpPost("")]
         public async Task<IActionResult> CreateAsync([FromForm] AccountAuthDTO authDTO)
         {
-            if (string.IsNullOrWhiteSpace(authDTO.Login) || string.IsNullOrWhiteSpace(authDTO.Password))
-                return new JsonResult(new { result = 0, message = "Логин и пароль не могут быть пустыми!" });
-            AccountDTO? accountDTO = await _accountRepository.CreateUserAsync(authDTO);
-            if (accountDTO is null) return new JsonResult(new { result = 0, message = "Неверные логин или пароль, проверьте ввод!" });
-            HttpContext.Session.SetInt32("id", accountDTO.Id);
-            return new JsonResult(new { result = 1 });
+            (IActionResult actionResult, int id) = await _accountsCommandService.CreateUserAsync(authDTO);
+            if (id > 0) HttpContext.Session.SetInt32("id", id);
+            return actionResult;
         }
 
         [HttpPost("Auth")]
         public async Task<IActionResult> AuthUserAsync([FromForm] AccountAuthDTO authDTO)
         {
-            if (string.IsNullOrWhiteSpace(authDTO.Login) || string.IsNullOrWhiteSpace(authDTO.Password))
-                return new JsonResult(new { result = 0, message = "Логин и пароль не могут быть пустыми!" });
-            AccountDTO? accountDTO = await _accountRepository.CheckUserAsync(authDTO);
-            if (accountDTO is null) return new JsonResult(new { result = 0, message = "Неверные логин или пароль, проверьте ввод!" });
-            HttpContext.Session.SetInt32("id", accountDTO.Id);
-            return new JsonResult(new { result = 1 });
+            (IActionResult actionResult, int id) = await _accountsQueryService.CheckUserAsync(authDTO);
+            if (id > 0) HttpContext.Session.SetInt32("id", id);
+            return actionResult;
         }
     }
 }

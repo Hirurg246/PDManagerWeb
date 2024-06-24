@@ -5,6 +5,6 @@ namespace PDManagerWeb.Services.Interfaces
 {
     public interface IAccountsQueryService
     {
-        public Task<IActionResult> CheckUserAsync(AccountAuthDTO authDTO);
+        public Task<(IActionResult resJSON, int id)> CheckUserAsync(AccountAuthDTO authDTO);
     }
 }

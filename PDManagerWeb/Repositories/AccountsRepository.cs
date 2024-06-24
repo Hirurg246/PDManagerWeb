@@ -10,29 +10,26 @@ using System.Text;
 
 namespace PDManagerWeb.Repositories
 {
-    public class AccountRepository: IAccountRepository
+    public class AccountsRepository: IAccountsRepository
     {
         public readonly PDManagerContext _context;
         public readonly IMapper _mapper;
-        public AccountRepository(PDManagerContext context, IMapper mapper)
+        public AccountsRepository(PDManagerContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<AccountDTO?> CheckUserAsync(AccountAuthDTO account)
+        public async Task<AccountDTO?> CheckUserAsync(AccountAuthDTO authDTO)
         {
-            account.Login = account.Login.Trim();
-            byte[] hPass = GetPswdHash(account.Password);
-            Account? user = await _context.Accounts.Where(a => a.Login == account.Login && !a.IsDeleted && a.PasswordHash == hPass).FirstOrDefaultAsync();
+            Account? user = _mapper.Map<Account>(authDTO);
+            user = await _context.Accounts.Where(a => a.Login == user.Login && !a.IsDeleted && a.PasswordHash == user.PasswordHash).FirstOrDefaultAsync();
             return user is null ? null: _mapper.Map<AccountDTO>(user);
         }
 
-        public async Task<AccountDTO?> CreateUserAsync(AccountAuthDTO account)
+        public async Task<AccountDTO?> CreateUserAsync(AccountAuthDTO authDTO)
         {
-            account.Login = account.Login.Trim();
-            byte[] hPass = GetPswdHash(account.Password);
-            Account user = new Account() { Login = account.Login, PasswordHash = hPass };
+            Account user = _mapper.Map<Account>(authDTO);
             await _context.Accounts.AddAsync(user);
             try
             {
